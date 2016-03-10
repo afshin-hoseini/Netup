@@ -579,7 +579,8 @@ public class InternetManager extends Thread {
 
 				if(e instanceof SocketTimeoutException)
 				{
-
+					if(listener != null)
+						listener.onFinish(0,ConnectionStatus.TIMEOUT, 0,0,null, null, OnConnectionResultListener.streamingStatus.DOWNLOAD);
 				}
 				else {
 
@@ -604,14 +605,14 @@ public class InternetManager extends Thread {
 					}
 
 
-					if (responseCode <= 0) {
-						if (listener != null && !cancelWork) {
-							listener.onConnectionStatusChanged(ConnectionStatus.NO_INTERNET);
-							listener.onFinish(0, ConnectionStatus.NO_INTERNET, 0, reqCode, null, null, OnConnectionResultListener.streamingStatus.UPLOAD);
-						}
+					if (responseCode <= 0 && listener != null && !cancelWork) {
+
+						listener.onConnectionStatusChanged(ConnectionStatus.NO_INTERNET);
+						listener.onFinish(0, ConnectionStatus.NO_INTERNET, 0, reqCode, null, null, OnConnectionResultListener.streamingStatus.UPLOAD);
 					}
 				}
-				
+
+
 				e.printStackTrace();
 			}
 			finally

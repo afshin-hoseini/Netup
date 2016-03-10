@@ -19,7 +19,7 @@ public enum ConnectionStatus {
         /**
          * The connection will need user authentication on server, but no user authentication token found.
          */
-        NO_AUTH_TOKEN, UserNotAuthenticated;
+        NO_AUTH_TOKEN, UserNotAuthenticated, TIMEOUT;
 
         /**
          * @param ctx Current {@link Context} object.
