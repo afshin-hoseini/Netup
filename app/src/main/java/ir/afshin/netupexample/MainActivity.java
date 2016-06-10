@@ -16,11 +16,19 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+
 import ir.afshin.netup.Requests.CacheManager;
 import ir.afshin.netup.Requests.DownloadCachePolicy;
 import ir.afshin.netup.Requests.DownloadRequest;
+import ir.afshin.netup.Requests.Request;
 import ir.afshin.netup.Requests.RequestQueue;
+import ir.afshin.netup.Requests.StringRequest;
 import ir.afshin.netup.base.ConnectionStatus;
+import ir.afshin.netup.base.InternetManager;
+import ir.afshin.netup.base.Pair;
+import ir.afshin.netup.base.PostParam;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,38 +44,62 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        lv_pics = (ListView) findViewById(R.id.lv_pictures);
 
-        //requestQueue.isDictator = true;
-        requestQueue.dictatorCapacity = 2;
-        imageCache = ImageCache.getInstance(this);
+        ArrayList<PostParam> params = new ArrayList<>();
+        params.add(new PostParam("email", "jel.ranjbar.saber@live.com", PostParam.ParamType.String));
+        params.add(new PostParam("password", "a150091", PostParam.ParamType.String));
 
-        pictureAdapter = new PictureAdapter();
-//        lv_pics.setAdapter(pictureAdapter);
-        CacheManager.clearExpiredFiles(this);
-        CacheManager.clearAllCachedFiles(this);
+        ArrayList<Pair<String, String>> headers = new ArrayList<>();
+        headers.add(new Pair<String, String>("content-type" ,"application/x-www-form-urlencoded"));
 
-        for(int i=0; i<50; i++) {
-
-            loadImage("pic"+i+".png");
-        }
-
-        new Handler().postDelayed(new Runnable() {
+        StringRequest stringRequest = new StringRequest(this, "http://ngad.ir/instime/index.php/instime/userLogin", headers, null, params, new StringRequest.OnStringResponse() {
             @Override
-            public void run() {
+            public void onStart(Request request) {
 
-                requestQueue.pause();
             }
-        }, 800);
 
-
-        new Handler().postDelayed(new Runnable() {
             @Override
-            public void run() {
+            public void onFinish(Request request, String response, boolean success, HttpURLConnection connection, ConnectionStatus status) {
 
-                requestQueue.resume();
+                Log.e("Server Resp", response);
             }
-        }, 5000);
+        });
+
+        stringRequest.setMethod(InternetManager.Methods.POST);
+        stringRequest.startJob();
+
+//        lv_pics = (ListView) findViewById(R.id.lv_pictures);
+//
+//        //requestQueue.isDictator = true;
+//        requestQueue.dictatorCapacity = 2;
+//        imageCache = ImageCache.getInstance(this);
+//
+//        pictureAdapter = new PictureAdapter();
+////        lv_pics.setAdapter(pictureAdapter);
+//        CacheManager.clearExpiredFiles(this);
+//        CacheManager.clearAllCachedFiles(this);
+//
+//        for(int i=0; i<50; i++) {
+//
+//            loadImage("pic"+i+".png");
+//        }
+//
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                requestQueue.pause();
+//            }
+//        }, 800);
+//
+//
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                requestQueue.resume();
+//            }
+//        }, 5000);
 
     }
 

@@ -235,7 +235,7 @@ public class InternetManager extends Thread {
 		try {
 			for (Pair<String, String> param : params) {
 				getParams += (isNotFirstParam ? "&" : "");
-				getParams += (param.first.equals("") ? "" : param.first + "=") + URLEncoder.encode(param.second, "UTF-8");
+				getParams += (param.first.equals("") ? "" : param.first + "=") + param.getSecond(url);
 				isNotFirstParam = true;
 			}
 		}catch (Exception e) {
