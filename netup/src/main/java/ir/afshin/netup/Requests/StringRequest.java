@@ -81,13 +81,13 @@ public class StringRequest extends Request {
 
                         if(onStringResponseListener != null)
                             onStringResponseListener.onFinish(StringRequest.this, Response, true, connection, ConnectionStatus.SUCCESSFUL);
-                        notifyRequestFinishToqueue(ConnectionStatus.SUCCESSFUL);
+                        notifyRequestFinishToQueue(ConnectionStatus.SUCCESSFUL);
 
                     }catch(Exception e)
                     {
                         if(onStringResponseListener != null)
                             onStringResponseListener.onFinish(StringRequest.this, "", false, null, status);
-                        notifyRequestFinishToqueue(status);
+                        notifyRequestFinishToQueue(status);
                         e.printStackTrace();
                     }
                 }
@@ -95,7 +95,7 @@ public class StringRequest extends Request {
                 {
                     if(onStringResponseListener != null)
                         onStringResponseListener.onFinish(StringRequest.this, "", false, connection, status);
-                    notifyRequestFinishToqueue(status);
+                    notifyRequestFinishToQueue(status);
                 }
 
 

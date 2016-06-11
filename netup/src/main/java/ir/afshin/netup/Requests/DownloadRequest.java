@@ -120,7 +120,7 @@ public class DownloadRequest extends Request {
 
                         if(downloadListener != null)
                             downloadListener.onFinish(DownloadRequest.this, true, status, cacheFileName);
-                        notifyRequestFinishToqueue(status);
+                        notifyRequestFinishToQueue(status);
 
 
                     }catch (Exception e) {
@@ -131,13 +131,13 @@ public class DownloadRequest extends Request {
 
                             if(downloadListener != null)
                                 downloadListener.onFinish(DownloadRequest.this, false, ConnectionStatus.CANCELED, null);
-                            notifyRequestFinishToqueue(ConnectionStatus.CANCELED);
+                            notifyRequestFinishToQueue(ConnectionStatus.CANCELED);
                         }
                         else {
 
                             if(downloadListener != null)
                                 downloadListener.onFinish(DownloadRequest.this, false, ConnectionStatus.UNSUCCESSFUL, null);
-                            notifyRequestFinishToqueue(ConnectionStatus.UNSUCCESSFUL);
+                            notifyRequestFinishToQueue(ConnectionStatus.UNSUCCESSFUL);
                         }
 
                     }
@@ -161,7 +161,7 @@ public class DownloadRequest extends Request {
 
                     if(downloadListener != null) {
                         downloadListener.onFinish(DownloadRequest.this, false, status, null);
-                        notifyRequestFinishToqueue(status);
+                        notifyRequestFinishToQueue(status);
                     }
                 }
 
@@ -194,7 +194,7 @@ public class DownloadRequest extends Request {
 
                 downloadListener.onStart(DownloadRequest.this);
                 downloadListener.onFinish(DownloadRequest.this, true, ConnectionStatus.SUCCESSFUL, validCachedFilename);
-                notifyRequestFinishToqueue(ConnectionStatus.SUCCESSFUL);
+                notifyRequestFinishToQueue(ConnectionStatus.SUCCESSFUL);
                 Log.e("DL-Req","File: " + validCachedFilename);
             }
         }
