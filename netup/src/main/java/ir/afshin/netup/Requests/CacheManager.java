@@ -9,16 +9,20 @@ import java.io.File;
 import ir.afshin.netup.Coding;
 
 /**
+ * Manages the private cached items.
  * Created by afshinhoseini on 2/2/16.
  */
 public class CacheManager {
 
-    /**The first item is filename and the second part after dash is expire time.*/
-    private final String cacheFileTemplate = "%1$s-%2$s";
+    /**The folder that keeps the cached items*/
     private static String _cacheFolder = null;
 
 // ____________________________________________________________________
 
+    /**
+     * Wipe off all cached items.
+     * @param ctx A context object.
+     */
     public static void clearAllCachedFiles(Context ctx) {
 
         File cacheFolder = new File(getCacheFolder(ctx));
@@ -36,6 +40,10 @@ public class CacheManager {
 
 // ____________________________________________________________________
 
+    /**
+     * Wipe off all expired cached items.
+     * @param ctx
+     */
     public static void clearExpiredFiles(Context ctx) {
 
         File cacheFolder = new File(getCacheFolder(ctx));
@@ -67,6 +75,14 @@ public class CacheManager {
 
 // ____________________________________________________________________
 
+    /**
+     * Creates a cache filename based on file url and given
+     * {@link DownloadCachePolicy download cache policy object}.
+     * @param ctx An object of context.
+     * @param url The url of file.
+     * @param cachePolicy The cache policy used for this download.
+     * @return The generated cache filename including the complete file path.
+     */
     public static String createCacheFilename(Context ctx, String url, DownloadCachePolicy cachePolicy) {
 
         long maxAge = new DownloadCachePolicy().maxAge;
@@ -78,6 +94,11 @@ public class CacheManager {
 
 // ____________________________________________________________________
 
+    /**
+     * Prepare a hash from the given url.
+     * @param url The url of the file.
+     * @return
+     */
     public static String getCacheFileNameHash(String url) {
 
         return Coding.makeMD5(url);
@@ -86,10 +107,10 @@ public class CacheManager {
 // ____________________________________________________________________
 
     /**
-     *
-     * @param ctx
-     * @param url
-     * @return The fileName if found, <b>null</b> if not found.
+     * Retrieves the cached filename of the given url.
+     * @param ctx An instance of context.
+     * @param url The url of the file your looking for.
+     * @return The cached <i>filename</i> of the given url if found, <b>null</b> if not found.
      */
     public static String getCachedFileName(Context ctx, String url) {
 
@@ -126,6 +147,11 @@ public class CacheManager {
 
 // ____________________________________________________________________
 
+    /**
+     * Coverts string to long in a safe manner.
+     * @param number
+     * @return The convertd long number or <i>0</i>, if couldn't convert.
+     */
     private static long stringToLong(String number) {
 
         long lng = 0;
@@ -144,24 +170,13 @@ public class CacheManager {
 
 // ____________________________________________________________________
 
+    /**
+     * @param ctx An instance of context.
+     * @return The cache folder where all the cached items will go there.
+     */
     public static String getCacheFolder(Context ctx) {
 
         if (_cacheFolder != null) return _cacheFolder;
-
-        /*String privatePath = Environment.getDataDirectory().getAbsolutePath() + "/data/" + ctx.getPackageName();
-
-        if (!privatePath.endsWith("/")) {
-
-            privatePath += "/";
-        }
-
-        String cacheDir = Environment.getDownloadCacheDirectory().getPath();
-        if (cacheDir.startsWith("/")){
-
-            cacheDir = cacheDir.substring(1);
-        }
-
-        _cacheFolder = privatePath + cacheDir + "/";*/
 
         _cacheFolder = ctx.getCacheDir().getPath();
 
