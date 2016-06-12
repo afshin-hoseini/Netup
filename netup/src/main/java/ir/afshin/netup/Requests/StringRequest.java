@@ -15,11 +15,24 @@ import ir.afshin.netup.base.ConnectionStatus;
 
 import android.content.Context;
 
+/**
+ * If you are about request server for some strings, regardless that string is json, XML, etc., this
+ * is the case fit you needs. If you know your response is json see {@link JsonObjectRequest}
+ * or {@link JsonArrayRequest}. If you wanna download some contents like a file or an Image, see
+ * {@link DownloadRequest}
+ */
 public class StringRequest extends Request {
 
     private OnStringResponse onStringResponseListener = null;
 
 // ____________________________________________________________________
+
+    /**
+     *
+     * @param ctx An instance of {@link Context}.
+     * @param listener An instance of {@link OnStringResponse} if you wanna listen to request status
+     *                 and its response.
+     */
     public StringRequest(Context ctx, OnStringResponse listener)
     {
         super(ctx);
@@ -27,6 +40,16 @@ public class StringRequest extends Request {
     }
 // ____________________________________________________________________
 
+    /**
+     *
+     * @param ctx An instance of {@link Context}.
+     * @param url The url you wanna connect with
+     * @param Headers The headers you wanna send to server.
+     * @param get_params The get parameters you wanna send through path query.
+     * @param post_params The post parameters you wanna send to server inside request body.
+     * @param listener An instance of {@link OnStringResponse} if you wanna listen to request status
+     *                 and its response.
+     */
     public StringRequest( Context ctx, String url, ArrayList<Pair<String, String>> Headers, ArrayList<Pair<String, String>> get_params, ArrayList<PostParam> post_params, OnStringResponse listener)
     {
         super(ctx, url, Headers, get_params, post_params);
@@ -41,15 +64,17 @@ public class StringRequest extends Request {
 
 // ____________________________________________________________________
 
+    /**
+     * Sets the given listener as default listener for this request's status.
+     * @param listener
+     */
     public void setOnStringResponseListener(OnStringResponse listener) {
 
         this.onStringResponseListener = listener;
     }
 
 // ____________________________________________________________________
-    /**
-     * Gets a response from server which contains string.
-     */
+
     public void startJob()
     {
 
@@ -135,7 +160,7 @@ public class StringRequest extends Request {
     }
 // ____________________________________________________________________
     /**
-     * Read data from inputstream.
+     * Read data from input stream and convert it to string..
      * @param inStream
      * @return
      * @throws Exception While some errors occurs, usually because of connection leaks.
@@ -158,10 +183,27 @@ public class StringRequest extends Request {
         return Response;
     }
 // ____________________________________________________________________
+
+    /**
+     * Listens to status of an {@link StringRequest}.
+     */
     public interface OnStringResponse {
 
+        /**
+         * Will be invoked once the given {@link Request} is started.
+         * @param request The started request.
+         */
         public void onStart(Request request);
 
+        /**
+         * Will be invoked once the given {@link Request} is finished.
+         * @param request
+         * @param response Includes server response.
+         * @param success <i>true</i> if the request succeeded, <i>false</i> otherwise.
+         * @param connection The connection object which handles the connection to server.
+         * @param status An instance of {@link ConnectionStatus} describing the server response and
+         *               reveal the reason of errors.
+         */
         public void onFinish(Request request, String response, boolean success, HttpURLConnection connection, ConnectionStatus status);
     }
 
