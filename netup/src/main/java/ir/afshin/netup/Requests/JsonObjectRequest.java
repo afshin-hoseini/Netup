@@ -12,16 +12,19 @@ import ir.afshin.netup.base.Pair;
 import ir.afshin.netup.base.PostParam;
 
 /**
+ * It requests server for an json object response. If you know the api you're calling will return
+ * json object, it's the case.
+ * <br/>
  * Created by afshinhoseini on 2/8/16.
  */
 public class JsonObjectRequest extends StringRequest {
 
 
-    private OnJsonObjectResponse listener = null;
+    private OnResponse listener = null;
 
 // ____________________________________________________________________
 
-    public JsonObjectRequest(Context ctx, OnJsonObjectResponse listener) {
+    public JsonObjectRequest(Context ctx, OnResponse listener) {
 
         super(ctx, null);
         super.setOnStringResponseListener(onStringResponse);
@@ -30,7 +33,7 @@ public class JsonObjectRequest extends StringRequest {
 
 // ____________________________________________________________________
 
-    public JsonObjectRequest(Context ctx, String url, ArrayList<Pair<String, String>> Headers, ArrayList<Pair<String, String>> get_params, ArrayList<PostParam> post_params, OnJsonObjectResponse listener) {
+    public JsonObjectRequest(Context ctx, String url, ArrayList<Pair<String, String>> Headers, ArrayList<Pair<String, String>> get_params, ArrayList<PostParam> post_params, OnResponse listener) {
 
         super(ctx, url, Headers, get_params, post_params, null);
         super.setOnStringResponseListener(onStringResponse);
@@ -39,16 +42,33 @@ public class JsonObjectRequest extends StringRequest {
 
 // ____________________________________________________________________
 
-    public void setOnJsonResponseListener(OnJsonObjectResponse listener) {
+    public void setOnJsonResponseListener(OnResponse listener) {
 
         this.listener = listener;
     }
 
 // ____________________________________________________________________
 
-    public interface OnJsonObjectResponse {
+    /**
+     * Listens to {@link JsonObjectRequest json object requests} to figure out when a request starts
+     * or when finishes.
+     */
+    public interface OnResponse {
 
+        /**
+         * Will be called once the given {@link JsonObjectRequest json object request} is started.
+         * @param request The started request.
+         */
         void onStart(JsonObjectRequest request);
+
+        /**
+         * Will be called once the given {@link JsonObjectRequest json object request} is finished.
+         * @param request The finished request.
+         * @param response The json object response.
+         * @param success <i>true</i> if the request succeeded, <i>false</i> otherwise.
+         * @param connection A pointer to connection itself.
+         * @param status An instance of {@link ConnectionStatus} describing the status of connection.
+         */
         void onFinish(JsonObjectRequest request, JSONObject response, boolean success, HttpURLConnection connection, ConnectionStatus status);
     }
 
@@ -77,8 +97,6 @@ public class JsonObjectRequest extends StringRequest {
                 } catch (Exception e) {
 
                     e.printStackTrace();
-                    success = false;
-                    status = ConnectionStatus.UNSUCCESSFUL;
                 }
             }
 
