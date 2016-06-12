@@ -14,6 +14,7 @@ import ir.afshin.netup.base.OnConnectionResultListener;
 import ir.afshin.netup.base.Pair;
 
 /**
+ * A request class for download purpose. It also use cached items to avoid redundant downloads.
  * Created by afshinhoseini on 1/29/16.
  */
 public class DownloadRequest extends Request {
@@ -50,6 +51,10 @@ public class DownloadRequest extends Request {
 
 // ____________________________________________________________________
 
+    /**
+     * Sets the given {@link OnDownloadRequestProgress} as the main report listener of this request.
+     * @param downloadListener
+     */
     public void setOnDownloadProgressListener(OnDownloadRequestProgress downloadListener) {
 
         this.downloadListener = downloadListener;
@@ -202,11 +207,36 @@ public class DownloadRequest extends Request {
 
 // ____________________________________________________________________
 
+    /**
+     * Listens to {@link DownloadRequest download requests} and reports their status.
+     */
     public interface OnDownloadRequestProgress {
 
-        public void onStart(DownloadRequest request);
-        public void onProgress(DownloadRequest request, long fileSize, long downloadedSize, float percent);
-        public void onFinish(DownloadRequest request, boolean success, ConnectionStatus status, String downloadedFilename);
+        /**
+         * Will be called whenever the given request is starte its job.
+         * @param request The started download request.
+         */
+        void onStart(DownloadRequest request);
+
+        /**
+         * Will be called while the given {@link DownloadRequest download request} is making
+         * progress.
+         * @param request The {@link DownloadRequest download request} made progress.
+         * @param fileSize The whole file size.
+         * @param downloadedSize The downloaded size.
+         * @param percent A float value between 0 and 1 indicating the download progress.
+         */
+        void onProgress(DownloadRequest request, long fileSize, long downloadedSize, float percent);
+
+        /**
+         * Will be called once the given {@link DownloadRequest download request} is finished.
+         * @param request The {@link DownloadRequest download request} that is just finished.
+         * @param success <i>true</i> if the job was finished successfully and file is downloaded
+         *                successfully.
+         * @param status An instance of {@link ConnectionStatus} indicating the status of connection
+         * @param downloadedFilename The downloaded filename on storage.
+         */
+        void onFinish(DownloadRequest request, boolean success, ConnectionStatus status, String downloadedFilename);
     }
 
 // ____________________________________________________________________
