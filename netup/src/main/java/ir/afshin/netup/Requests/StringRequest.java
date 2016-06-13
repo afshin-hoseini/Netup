@@ -24,6 +24,7 @@ import android.content.Context;
 public class StringRequest extends Request {
 
     private OnStringResponse onStringResponseListener = null;
+    private UploadProgressListener uploadProgressListener = null;
 
 // ____________________________________________________________________
 
@@ -72,6 +73,16 @@ public class StringRequest extends Request {
 
         this.onStringResponseListener = listener;
     }
+// ____________________________________________________________________
+
+    /**
+     * Sets the given listener as default upload progress listener.
+     * @param uploadProgressListener
+     */
+    public void setUploadProgressListener(UploadProgressListener uploadProgressListener) {
+
+        this.uploadProgressListener = uploadProgressListener;
+    }
 
 // ____________________________________________________________________
 
@@ -87,7 +98,13 @@ public class StringRequest extends Request {
                     onStringResponseListener.onStart(StringRequest.this);
             }
 
-            public void onProgressChanged(int progress, int size, int reqCode, streamingStatus streamingStatus) {}
+            public void onProgressChanged(int progress, int size, int reqCode, streamingStatus streamingStatus)
+            {
+                if(streamingStatus == OnConnectionResultListener.streamingStatus.UPLOAD
+                        && uploadProgressListener != null) {
+                    uploadProgressListener.onProgress(StringRequest.this, progress, size);
+                }
+            }
 
             public void onFinish(int serverResponseCode, ConnectionStatus status, int size, int reqCode,
                                  InputStream inStream, HttpURLConnection connection,
@@ -193,7 +210,7 @@ public class StringRequest extends Request {
          * Will be invoked once the given {@link Request} is started.
          * @param request The started request.
          */
-        public void onStart(Request request);
+        void onStart(Request request);
 
         /**
          * Will be invoked once the given {@link Request} is finished.
@@ -204,7 +221,23 @@ public class StringRequest extends Request {
          * @param status An instance of {@link ConnectionStatus} describing the server response and
          *               reveal the reason of errors.
          */
-        public void onFinish(Request request, String response, boolean success, HttpURLConnection connection, ConnectionStatus status);
+        void onFinish(Request request, String response, boolean success, HttpURLConnection connection, ConnectionStatus status);
+    }
+
+// ____________________________________________________________________
+
+    /**
+     * Listens to upload progress.
+     */
+    public interface UploadProgressListener {
+
+        /**
+         * Will be invoked with appropriate parameters, while assigned request made upload progress.
+         * @param request Determines which {@link Request} did make progress.
+         * @param uploaded Uploaded byte count.
+         * @param wholeSize Whole uploading content.
+         */
+        void onProgress(Request request, int uploaded, int wholeSize);
     }
 
 // ____________________________________________________________________
