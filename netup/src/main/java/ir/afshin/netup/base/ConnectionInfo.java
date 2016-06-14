@@ -4,7 +4,7 @@ package ir.afshin.netup.base;
  * @author afshin
  * Keeps cookie data
  */
-public class ConnectionInfo {
+class ConnectionInfo {
 	
 	/**
 	 * Last connection Cookie.

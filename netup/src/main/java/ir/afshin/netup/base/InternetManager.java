@@ -603,7 +603,7 @@ public class InternetManager extends Thread {
 
 					int responseCode = connection.getResponseCode();
 
-					ConnectionStatus status = ResponseHelper.toEquivalentStatus(responseCode);
+					ConnectionStatus status = ConnectionStatus.toEquivalentStatus(responseCode);
 
 					listener.onFinish(responseCode,	status, connection.getContentLength(), reqCode,
 							status == ConnectionStatus.SUCCESSFUL ? connection.getInputStream():(InputStream)null,
