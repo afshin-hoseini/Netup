@@ -1,12 +1,12 @@
 package ir.afshin.netup.base;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -30,30 +30,29 @@ public class InternetManager extends Thread {
 	protected Context ctx = null;
 	protected int reqCode;
 	protected ArrayList<Pair<String, String>> Headers;
-	protected ArrayList<Pair<String, String>> get_params;
-	protected ArrayList<PostParam> post_params;
+	protected ArrayList<Pair<String, String>> getParams;
+	protected ArrayList<PostParam> postParams;
 	protected OnConnectionResultListener listener;
 	protected String url = "";
 
 	protected boolean cancelWork = false;
 
-	String dashes = "--";
-	String crlf = Character.toString((char)0x0d) + Character.toString((char)0x0a);//"\r\n";
-	String boundary = "----A35cxyzA35cxyzA35cxyzA35cxyz";
-
-	String multiPartPostHDR = "Content-type: multipart/form-data; boundary=" + boundary + crlf;
+	private final String dashes = "--";
+	private final String crlf = Character.toString((char)0x0d) + Character.toString((char)0x0a);//"\r\n";
+	private final String boundary = "----A35cxyzA35cxyzA35cxyzA35cxyz";
+	private final String multiPartPostHDR = "Content-type: multipart/form-data; boundary=" + boundary + crlf;
 	/**
 	 * Parameters:
 	 * 1- form object name.
 	 */
-	String formDataHeader = crlf+dashes+boundary + crlf + "Content-Disposition: form-data; name=\"%1$s\"";
+	private String formDataHeader = crlf+dashes+boundary + crlf + "Content-Disposition: form-data; name=\"%1$s\"";
 
 	/**
 	 * Parameters:<br/>
 	 * 1- form object name.<br/>
 	 * 2- form object value.<br/>
 	 */
-	String formDataPost = formDataHeader /*+ crlf + "Content-Type:application/octet-stream" */+ crlf + crlf + "%2$s" ;
+	private String formDataContent = formDataHeader /*+ crlf + "Content-Type:application/octet-stream" */+ crlf + crlf + "%2$s" ;
 
 	/**
 	 * Parameters:<br/>
@@ -61,16 +60,18 @@ public class InternetManager extends Thread {
 	 * 2- filename.<br/>
 	 * 3- content type.<br/>
 	 */
-	String fileHeader = formDataHeader +  "; filename=\"%2$s\"" + crlf + "Content-type:%3$s" + crlf + crlf;
+	private String fileHeader = formDataHeader +  "; filename=\"%2$s\"" + crlf + "Content-type:%3$s" + crlf + crlf;
 
 	private boolean methodManuallySet = false;
 	private String methodType = "";
 
 	public enum Methods{
-		GET, POST, PUT, DELETE, Auto
+		GET, POST, PUT, DELETE, HEAD, Auto
 	}
 
 	int timeOut = 20000;
+
+	private boolean mustPostParamSent_multiParted = false;
 
 // ____________________________________________________________________
 	/**
@@ -91,15 +92,15 @@ public class InternetManager extends Thread {
 		this.url = url;
 		this.reqCode = reqCode;
 		this.Headers = Headers;
-		this.get_params = get_params;
-		this.post_params = post_params;
+		this.getParams = get_params;
+		this.postParams = post_params;
 		this.listener = listener;
 
 		cancelWork = false;
 		start();
 
 	}
-	// ____________________________________________________________________
+// ____________________________________________________________________
 	public void setMethod(Methods method)
 	{
 		if(method == Methods.Auto)
@@ -112,11 +113,27 @@ public class InternetManager extends Thread {
 				case POST: methodType = "POST"; break;
 				case PUT: methodType = "PUT"; break;
 				case DELETE: methodType = "DELETE"; break;
+				case HEAD: methodType = "HEAD"; break;
 			}
 		}
 
 	}
-	// ____________________________________________________________________
+
+// ____________________________________________________________________
+
+	/**
+	 *
+	 * @param multiPart If <i>true</i>, post parameters will be sent in a multipart manner, if
+	 *                     <i>false</i>, the internet manager will seek your post params and if
+	 *                  could find at least one post poarameter including file, then automatically
+	 *                  send your request body in a multipart manner, otherwise will send your
+	 *                  request body in a simple key-value format.
+     */
+	public void forceMultiPart(boolean multiPart) {
+
+		mustPostParamSent_multiParted = multiPart;
+	}
+// ____________________________________________________________________
 	public void connect(Context ctx, OnConnectionResultListener listener)
 	{
 		this.ctx = ctx;
@@ -146,8 +163,8 @@ public class InternetManager extends Thread {
 	/**
 	 * Disconnects connection and also informs listener about disconnection.<br/>
 	 * <h1>Note:</h1>
-	 * Calling this function perfectly cancels upload actions, but if streaming is in download pkgDlStatus, this method just tell the listener
-	 * that cancel notified. The listener could response the cancellation depend on it's situation. <b>That means the listener HAVE TO handle
+	 * Calling this function perfectly cancels upload actions, but if streaming is in download status, this method just tell the listener
+	 * to cancel work. The listener could response the cancellation depend on it's situation. <b>That means the listener HAVE TO handle
 	 * download action itself...</b>
 	 */
 	public void disconnect()
@@ -194,10 +211,10 @@ public class InternetManager extends Thread {
 
 		return desc;
 	}
-	// ____________________________________________________________________
+
+// ____________________________________________________________________
 	private void addHeaders(ArrayList<Pair<String, String>> headers)
 	{
-		//connection.getRequestProperties().clear();
 
 		if(connection == null)
 			return;
@@ -215,15 +232,14 @@ public class InternetManager extends Thread {
 
 		for (Pair<String, String> header : headers) {
 
-			connection.addRequestProperty(header.first, header.second);
-
-
+			connection.addRequestProperty(header.getFirst(), header.getSecondWithoutEncoding());
 		}
 
 
 
 	}
-	// ____________________________________________________________________
+// ____________________________________________________________________
+
 	private String addGetParams(String url, ArrayList<Pair<String, String>> params)
 	{
 		if(params == null || params.size() == 0)
@@ -235,7 +251,7 @@ public class InternetManager extends Thread {
 		try {
 			for (Pair<String, String> param : params) {
 				getParams += (isNotFirstParam ? "&" : "");
-				getParams += (param.first.equals("") ? "" : param.first + "=") + param.getSecond(url);
+				getParams += (param.getFirst().equals("") ? "" : param.getFirst() + "=") + param.getSecond(url);
 				isNotFirstParam = true;
 			}
 		}catch (Exception e) {
@@ -246,7 +262,60 @@ public class InternetManager extends Thread {
 
 		return url;
 	}
-	// ____________________________________________________________________
+
+// ____________________________________________________________________
+
+	private boolean isBodyMultipart(ArrayList<PostParam> params) {
+
+		boolean multiPart = mustPostParamSent_multiParted;
+
+		//If programmer didn't force to use multipart format, we have to check post paramters to see
+		//if it's needed to send body in multipart format or not.
+		if(!multiPart) {
+			//Seeking post parameters to find at list one FILE
+			for (PostParam param : params) {
+				if (param.type == ParamType.File) {
+					multiPart = true;
+					break;
+				}
+			}
+		}
+		return multiPart;
+	}
+// ____________________________________________________________________
+
+	/**
+	 * Convert post parameters into a key value format as like as : <b>name=value&name=value...</b>
+	 * @param postParams
+	 * @param forUrl
+     * @return
+     */
+	private String createKeyValueBodyFrom(ArrayList<PostParam> postParams, String forUrl) {
+
+		String postData = "";
+		boolean isNotFirstParam = false;
+
+		try {
+			for (PostParam param : postParams) {
+				postData += (isNotFirstParam ? "&" : "");
+				postData += (param.name.equals("") ? "" : param.name + "=") + param.getValue(forUrl);
+				isNotFirstParam = true;
+			}
+		}catch (Exception e) {
+
+			e.printStackTrace();
+		}
+
+		return postData;
+	}
+
+// ____________________________________________________________________
+
+	/**
+	 * Calculates the size of request body.
+	 * @param params The post parameters.
+	 * @return The amount of bytes that must be sent to server.
+     */
 	private int calculateUploadingDataSize(ArrayList<PostParam> params)
 	{
 		int size = 0;
@@ -254,34 +323,12 @@ public class InternetManager extends Thread {
 		if(params == null || params.size() == 0)
 			return 0;
 
-		boolean multiPart = false;
-
-		for(PostParam param: params)
-		{
-			if(param.type != ParamType.String)
-			{
-				multiPart = true;
-				break;
-			}
-		}
+		boolean multiPart = isBodyMultipart(params);
 
 		if(!multiPart)
 		{
 
-			String postData = "";
-			boolean isNotFirstParam = false;
-
-			try {
-				for (PostParam param : params) {
-					postData += (isNotFirstParam ? "&" : "");
-					postData += (param.name.equals("") ? "" : param.name + "=") + URLEncoder.encode(param.value, "UTF-8");
-					isNotFirstParam = true;
-				}
-			}catch (Exception e) {
-
-				e.printStackTrace();
-			}
-
+			String postData = createKeyValueBodyFrom(params, this.url);
 			byte data[] = postData.getBytes();
 			size += data.length;
 		}
@@ -292,9 +339,9 @@ public class InternetManager extends Thread {
 
 			for(PostParam param : params)
 			{
-				if(param.type == ParamType.String || param.type == ParamType.Form)
+				if(param.type == ParamType.String)
 				{
-					String paramTxt = String.format(formDataPost, param.name, param.value,"%");
+					String paramTxt = String.format(formDataContent, param.name, param.getValueWithoutEncoding());
 					data = paramTxt.getBytes();
 					size += data.length;
 				}
@@ -304,8 +351,11 @@ public class InternetManager extends Thread {
 					size += data.length;
 
 					try {
-						size += param.stream.available();
-					} catch (IOException e) {e.printStackTrace();}
+						if(param.fileToUpload.isFile()) {
+
+							size += param.fileToUpload.length();
+						}
+					} catch (Exception e) {e.printStackTrace();}
 				}
 			}
 
@@ -319,22 +369,13 @@ public class InternetManager extends Thread {
 
 		return size;
 	}
-	// ____________________________________________________________________
+// ____________________________________________________________________
 	private void writePostParams(ArrayList<PostParam> params, int uploadingDataSize, OnConnectionResultListener listener) throws Exception
 	{
 		if(connection == null || params == null || params.size() == 0)
 			return;
 
-		boolean multiPart = false;
-
-		for(PostParam param: params)
-		{
-			if(param.type != ParamType.String)
-			{
-				multiPart = true;
-				break;
-			}
-		}
+		boolean multiPart = isBodyMultipart(params);
 
 		/**
 		 * This variable will be used to get some report.
@@ -344,15 +385,7 @@ public class InternetManager extends Thread {
 		if(!multiPart)
 		{
 
-			String postData = "";
-			boolean isNotFirstParam = false;
-
-			for (PostParam param : params) {
-				postData += (isNotFirstParam ? "&":"");
-				postData += (param.name.equals("") ? "":param.name+"=") + URLEncoder.encode(param.value, "UTF-8");
-				isNotFirstParam = true;
-			}
-
+			String postData = createKeyValueBodyFrom(params, this.url);
 
 			if(!cancelWork)
 			{
@@ -386,9 +419,9 @@ public class InternetManager extends Thread {
 				if(cancelWork)
 					break;
 
-				if(param.type == ParamType.String || param.type == ParamType.Form)
+				if(param.type == ParamType.String)
 				{
-					String paramTxt = String.format(formDataPost, param.name, param.value,"%");
+					String paramTxt = String.format(formDataContent, param.name, param.getValueWithoutEncoding());
 
 					PostCompleteData += paramTxt;
 
@@ -415,9 +448,12 @@ public class InternetManager extends Thread {
 						listener.onProgressChanged(uploadedSize, uploadingDataSize, reqCode, OnConnectionResultListener.streamingStatus.UPLOAD);
 					}
 
+					InputStream inputStream = null;
+
 					try{
 
-						while((readBytes = param.stream.read(buffer)) != -1 && !cancelWork)
+						inputStream = new FileInputStream(param.fileToUpload);
+						while((readBytes = inputStream.read(buffer)) != -1 && !cancelWork)
 						{
 							outStream.write(buffer, 0, readBytes);
 
@@ -432,6 +468,11 @@ public class InternetManager extends Thread {
 					{
 						e.printStackTrace();
 					}
+					finally {
+
+						if(inputStream != null)
+							inputStream.close();
+					}
 				}
 			}
 
@@ -444,6 +485,13 @@ public class InternetManager extends Thread {
 				String end = crlf+dashes+boundary+dashes;
 				data = end.getBytes();
 				outStream.write(data);
+
+				uploadedSize += data.length;
+				if(listener != null && !cancelWork)
+				{
+					listener.onProgressChanged(uploadedSize, uploadingDataSize, reqCode, OnConnectionResultListener.streamingStatus.UPLOAD);
+				}
+
 				PostCompleteData += end;
 
 			}catch(Exception e)
@@ -464,11 +512,9 @@ public class InternetManager extends Thread {
 	public void run()
 	{
 
-		//if (Integer.parseInt(Build.VERSION.SDK) < Build.VERSION_CODES.FROYO)
 		System.setProperty("http.keepAlive", "false");
-//		System.setProperty("http.maxConnections", "1");
 
-		int uploadingDataSize = calculateUploadingDataSize(post_params);
+		int uploadingDataSize = calculateUploadingDataSize(postParams);
 
 		if(listener != null)
 		{
@@ -487,10 +533,10 @@ public class InternetManager extends Thread {
 		}
 		else
 		{
-			//if Internet is connected.
+			//if the Internet is connected.
 			try{
 
-				url = addGetParams(url, get_params);
+				url = addGetParams(url, getParams);
 				connection = null;
 
 				if(url.startsWith("https"))
@@ -510,25 +556,14 @@ public class InternetManager extends Thread {
 
 				//In this if block we check about the nature of our post parameters.
 				//First, checks if have any post parameters or not...
-				if(post_params != null && post_params.size() > 0)
+				if(postParams != null && postParams.size() > 0)
 				{
 					if(!methodManuallySet)
 						connection.setRequestMethod("POST");
 					connection.setDoOutput(true);
 
 					//We assumed that post data is not a file, so that the it's nature is not multi part
-					boolean multiPart = false;
-					//Now we check every post parameter to find at least on file.
-					for(PostParam param: post_params)
-					{
-						//If we could find a file or in other words, a none string parameter type
-						if(param.type != ParamType.String)
-						{
-							//We will realize our post nature is multi part
-							multiPart = true;
-							break;
-						}
-					}
+					boolean multiPart = isBodyMultipart(postParams);
 
 					//Now here we put a header to determine post method.
 					if(multiPart)
@@ -557,7 +592,7 @@ public class InternetManager extends Thread {
 
 
 
-				writePostParams(post_params, uploadingDataSize, listener);
+				writePostParams(postParams, uploadingDataSize, listener);
 
 
 				if(listener != null && !cancelWork)

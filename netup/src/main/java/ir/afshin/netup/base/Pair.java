@@ -5,21 +5,24 @@ import java.net.URLEncoder;
 
 public class Pair<F extends String,S extends String> implements Serializable{
 	
-	public F first;
-	public S second;
+	private F first;
+	private S second;
 	ContentEncoder contentEncoder = null;
-	
+
+// ____________________________________________________________________
+
 	public Pair(F first, S second) {
 
 		init(first, second, null);
 	}
-
+// ____________________________________________________________________
 
 	public Pair(F first, S second, ContentEncoder contentEncoder) {
 
 		init(first, second, contentEncoder);
 	}
 
+// ____________________________________________________________________
 
 	private void init(F first, S second, ContentEncoder contentEncoder) {
 
@@ -28,6 +31,14 @@ public class Pair<F extends String,S extends String> implements Serializable{
 		this.contentEncoder = contentEncoder;
 	}
 
+// ____________________________________________________________________
+
+	String getFirst() {
+
+		return first;
+	}
+
+// ____________________________________________________________________
 
 	String getSecond(String forUrl) {
 
@@ -52,5 +63,13 @@ public class Pair<F extends String,S extends String> implements Serializable{
 
 		return encodedSecond;
 	}
+
+// ____________________________________________________________________
+
+	String getSecondWithoutEncoding() {
+
+		return second;
+	}
+// ____________________________________________________________________
 
 }

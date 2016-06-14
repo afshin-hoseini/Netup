@@ -3,7 +3,7 @@ package ir.afshin.netup.base;
 /**
  * Created by afshin on 6/9/15.
  */
-public class ResponseHelper {
+class ResponseHelper {
 
     public static ConnectionStatus toEquivalentStatus(int serverResponseCode)
     {

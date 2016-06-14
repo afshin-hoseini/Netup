@@ -1,5 +1,6 @@
 package ir.afshin.netup.base;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
 
@@ -12,7 +13,7 @@ public class PostParam implements Serializable{
 	/**
 	 * Represents the types of post parameters.
 	 */
-	public static enum ParamType {String, File, Form}
+	public enum ParamType {String, File}
 
 	/**
 	 * Parameter's type.
@@ -21,29 +22,35 @@ public class PostParam implements Serializable{
 	/**
 	 * Parameter's name
 	 */
-	public String name = "";
+	String name = "";
 	/**
 	 * Parameters mime type which is usable if the parameter's type is ParamType.File
 	 */
-	public String mimeType = "";
+	String mimeType = "";
 	/**
 	 * If parameter's type is ParamType.File then this input stream will contains the stream of the
-	 * file which should sent.
+	 * file which should be sent.
 	 */
-	public InputStream stream = null;
+	File fileToUpload = null;
 	/**
 	 * If parameter's type is paramType.String, this variable stores the string value which should be sent.
 	 */
-	public String value = "";
+	private String value = "";
 	/**
 	 * If parameter's type is ParamType.File then this field stores the file name to inform server about filename.
 	 */
-	public String fileName = "";
+	String fileName = "";
+
+
+	/**
+	 * An instance of {@link ContentEncoder} encodes the value the way programmer wants.
+	 */
+	private ContentEncoder customValueEncoder = null;
 	
 // ____________________________________________________________________
-	public PostParam(ParamType type, String name, String fileName, String value, String mimeType, InputStream stream)
+	public PostParam(ParamType type, String name, String fileName, String value, String mimeType, File fileToUpload)
 	{
-		setParams(type, name, fileName, value, mimeType, stream);
+		setParams(type, name, fileName, value, mimeType, fileToUpload);
 	}
 // ____________________________________________________________________
 
@@ -51,11 +58,17 @@ public class PostParam implements Serializable{
 	 * Creates a string type post parameter.
 	 * @param name
 	 * @param value
-	 * @param type
 	 */
-	public PostParam(String name, String value, ParamType type)
+	public PostParam(String name, String value)
 	{
-		setParams(type, name, "", value, "plain-text", null);
+		setParams(ParamType.String, name, "", value, "plain-text", null);
+	}
+// ____________________________________________________________________
+
+	public PostParam(String name, String value, ContentEncoder customValueEncoder)
+	{
+		this.customValueEncoder = customValueEncoder;
+		setParams(ParamType.String, name, "", value, "plain-text", null);
 	}
 // ____________________________________________________________________
 
@@ -64,25 +77,40 @@ public class PostParam implements Serializable{
 	 * @param name
 	 * @param fileName
 	 * @param mimeType
-	 * @param stream
+	 * @param fileToUpload
 	 */
-	public PostParam(String name, String fileName, String mimeType, InputStream stream)
+	public PostParam(String name, String fileName, String mimeType, File fileToUpload)
 	{
-		setParams(ParamType.File, name, fileName, "", mimeType, stream);
+		setParams(ParamType.File, name, fileName, "", mimeType, fileToUpload);
 	}
 // ____________________________________________________________________
 
 	/**
 	 * A simple setter.
 	 */
-	private void setParams(ParamType type, String name, String fileName, String value, String mimeType, InputStream stream)
+	private void setParams(ParamType type, String name, String fileName, String value, String mimeType, File fileToUpload)
 	{
 		this.type = type;
 		this.name = name;
 		this.value = value;
 		this.mimeType = mimeType;
-		this.stream = stream;
+		this.fileToUpload = fileToUpload;
 		this.fileName = fileName;
+	}
+
+// ____________________________________________________________________
+
+	String getValue(String url){
+
+		Pair pair = new Pair(name, value, customValueEncoder);
+		return pair.getSecond(url);
+	}
+
+// ____________________________________________________________________
+
+	String getValueWithoutEncoding() {
+
+		return value;
 	}
 // ____________________________________________________________________	
 

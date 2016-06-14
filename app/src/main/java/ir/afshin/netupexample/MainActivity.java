@@ -26,6 +26,7 @@ import ir.afshin.netup.Requests.Request;
 import ir.afshin.netup.Requests.RequestQueue;
 import ir.afshin.netup.Requests.StringRequest;
 import ir.afshin.netup.base.ConnectionStatus;
+import ir.afshin.netup.base.ContentEncoder;
 import ir.afshin.netup.base.InternetManager;
 import ir.afshin.netup.base.Pair;
 import ir.afshin.netup.base.PostParam;
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     ListView lv_pics = null;
     ImageCache imageCache = null;
-    RequestQueue requestQueue = new RequestQueue();
+    RequestQueue requestQueue = RequestQueue.createNormalQueue();
     PictureAdapter pictureAdapter = null;
 
 
@@ -46,8 +47,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         ArrayList<PostParam> params = new ArrayList<>();
-        params.add(new PostParam("email", "jel.ranjbar.saber@live.com", PostParam.ParamType.String));
-        params.add(new PostParam("password", "a150091", PostParam.ParamType.String));
+        params.add(new PostParam("email", "jel.ranjbar.saber@live.com", new ContentEncoder() {
+            @Override
+            public String encodeContent(String forUrl, String forKey, String valueToEncode) {
+                return valueToEncode;
+            }
+        }));
+        params.add(new PostParam("password", "a150091"));
 
         ArrayList<Pair<String, String>> headers = new ArrayList<>();
         headers.add(new Pair<String, String>("content-type" ,"application/x-www-form-urlencoded"));

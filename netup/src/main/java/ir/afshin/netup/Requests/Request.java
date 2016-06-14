@@ -1,7 +1,6 @@
 package ir.afshin.netup.Requests;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -71,8 +70,8 @@ public abstract class Request extends InternetManager{
 
         this.url = url;
         this.Headers = Headers;
-        this.get_params = get_params;
-        this.post_params = post_params;
+        this.getParams = get_params;
+        this.postParams = post_params;
     }
 
 // ____________________________________________________________________
