@@ -3,6 +3,7 @@ package ir.afshin.netupexample;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.util.LruCache;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.File;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
@@ -46,33 +48,33 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        ArrayList<PostParam> params = new ArrayList<>();
-        params.add(new PostParam("email", "jel.ranjbar.saber@live.com", new ContentEncoder() {
-            @Override
-            public String encodeContent(String forUrl, String forKey, String valueToEncode) {
-                return valueToEncode;
-            }
-        }));
-        params.add(new PostParam("password", "a150091"));
-
-        ArrayList<Pair<String, String>> headers = new ArrayList<>();
-        headers.add(new Pair<String, String>("content-type" ,"application/x-www-form-urlencoded"));
-
-        StringRequest stringRequest = new StringRequest(this, "http://ngad.ir/instime/index.php/instime/userLogin", headers, null, params, new StringRequest.OnStringResponse() {
-            @Override
-            public void onStart(Request request) {
-
-            }
-
-            @Override
-            public void onFinish(Request request, String response, boolean success, HttpURLConnection connection, ConnectionStatus status) {
-
-                Log.e("Server Resp", response);
-            }
-        });
-
-        stringRequest.setMethod(InternetManager.Methods.POST);
-        stringRequest.startJob();
+//        ArrayList<PostParam> params = new ArrayList<>();
+//        params.add(new PostParam("email", "jel.ranjbar.saber@live.com", new ContentEncoder() {
+//            @Override
+//            public String encodeContent(String forUrl, String forKey, String valueToEncode) {
+//                return valueToEncode;
+//            }
+//        }));
+//        params.add(new PostParam("password", "a150091"));
+//
+//        ArrayList<Pair<String, String>> headers = new ArrayList<>();
+//        headers.add(new Pair<String, String>("content-type" ,"application/x-www-form-urlencoded"));
+//
+//        StringRequest stringRequest = new StringRequest(this, "http://ngad.ir/instime/index.php/instime/userLogin", headers, null, params, new StringRequest.OnStringResponse() {
+//            @Override
+//            public void onStart(Request request) {
+//
+//            }
+//
+//            @Override
+//            public void onFinish(Request request, String response, boolean success, HttpURLConnection connection, ConnectionStatus status) {
+//
+//                Log.e("Server Resp", response);
+//            }
+//        });
+//
+//        stringRequest.setMethod(InternetManager.Methods.POST);
+//        stringRequest.startJob();
 
 //        lv_pics = (ListView) findViewById(R.id.lv_pictures);
 //
@@ -107,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        }, 5000);
 
+        uploadTest();
     }
 
 
@@ -219,6 +222,41 @@ public class MainActivity extends AppCompatActivity {
             return row;
         }
 
+    }
+
+
+    private void uploadTest() {
+
+        File apiPngFile = new File(Environment.getExternalStorageDirectory().getPath() + "/Download/api.png");
+
+        ArrayList<PostParam> postParams = new ArrayList<>();
+        postParams.add(new PostParam("fileToUpload", "api.png","image/png", apiPngFile));
+        postParams.add(new PostParam("description", "Some description here"));
+        StringRequest request = new StringRequest(this, "http://www.tinypro.ir/uploadTest.php", null, null, postParams, new StringRequest.OnStringResponse() {
+            @Override
+            public void onStart(Request request) {
+
+                Log.e("UPLOAD", "Started");
+            }
+
+            @Override
+            public void onFinish(Request request, String response, boolean success, HttpURLConnection connection, ConnectionStatus status) {
+
+                Log.e("UPLOAD", "Finished");
+                Log.e("UPLOAD", response);
+            }
+        });
+
+        request.setUploadProgressListener(new StringRequest.UploadProgressListener() {
+            @Override
+            public void onProgress(Request request, int uploaded, int wholeSize) {
+
+                Log.e("UPLOAD", "progress: " + ((float)uploaded / (float) wholeSize));
+            }
+        });
+
+        request.setMethod(InternetManager.Methods.POST);
+        request.startJob();
     }
 
 
