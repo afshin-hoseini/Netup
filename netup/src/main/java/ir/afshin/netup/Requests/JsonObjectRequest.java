@@ -14,7 +14,7 @@ import ir.afshin.netup.base.PostParam;
 /**
  * It requests server for an json object response. If you know the api you're calling will return
  * json object, it's the case.
- * <br/>
+ * <p>
  * Created by afshinhoseini on 2/8/16.
  */
 public class JsonObjectRequest extends StringRequest {

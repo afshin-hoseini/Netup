@@ -53,7 +53,8 @@ public class DownloadRequest extends Request {
 
     /**
      * Sets the given {@link OnDownloadRequestProgress} as the main report listener of this request.
-     * @param downloadListener
+     * @param downloadListener An instance of {@link OnDownloadRequestProgress}, listens to download
+     *                         progress.
      */
     public void setOnDownloadProgressListener(OnDownloadRequestProgress downloadListener) {
 

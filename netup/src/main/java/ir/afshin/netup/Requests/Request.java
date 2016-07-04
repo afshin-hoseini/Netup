@@ -89,7 +89,7 @@ public abstract class Request extends InternetManager{
 
     /**
      * Sets the tag object.
-     * @param tag
+     * @param tag A tag to recognize this request.
      * @see #tag
      */
     public void setTag(Object tag) {
@@ -160,7 +160,7 @@ public abstract class Request extends InternetManager{
 
     /**
      * Determines that this request is a member of the given group name or not.
-     * @param group
+     * @param group The group you wanna check if this request is belong to or not.
      * @return <i>true</i> if this request is a member of the given group name, <i>false</i> otherwise.
      */
     public boolean isMemberOfGroup(String group) {
@@ -172,8 +172,8 @@ public abstract class Request extends InternetManager{
 
     /**
      * Checks if request identifier is equals to given identifier or not.
-     * @param identifier
-     * @return
+     * @param identifier The identifier you wanna check if this request is equeal to or not.
+     * @return <i>true</i> if this request has the given identifier, <i>false</i> otherwise.
      */
     public boolean isEqualToIdentifier(String identifier) {
 
@@ -206,7 +206,7 @@ public abstract class Request extends InternetManager{
 
     /**
      * Checks the equality of this request against the given request.
-     * @param request
+     * @param request The request which you wanna check if this request is equal to or not.
      * @return <i>true</i> if the given request object is equals to this request instance.
      */
     @Override

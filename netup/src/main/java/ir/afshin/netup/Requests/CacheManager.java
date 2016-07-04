@@ -42,7 +42,7 @@ public class CacheManager {
 
     /**
      * Wipe off all expired cached items.
-     * @param ctx
+     * @param ctx A context object.
      */
     public static void clearExpiredFiles(Context ctx) {
 
@@ -97,7 +97,7 @@ public class CacheManager {
     /**
      * Prepare a hash from the given url.
      * @param url The url of the file.
-     * @return
+     * @return A hash string based on given url.
      */
     public static String getCacheFileNameHash(String url) {
 

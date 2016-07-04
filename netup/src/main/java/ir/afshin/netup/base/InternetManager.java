@@ -48,17 +48,17 @@ public class InternetManager extends Thread {
 	private String formDataHeader = crlf+dashes+boundary + crlf + "Content-Disposition: form-data; name=\"%1$s\"";
 
 	/**
-	 * Parameters:<br/>
-	 * 1- form object name.<br/>
-	 * 2- form object value.<br/>
+	 * Parameters:<p>
+	 * 1- form object name.<p>
+	 * 2- form object value.<p>
 	 */
 	private String formDataContent = formDataHeader /*+ crlf + "Content-Type:application/octet-stream" */+ crlf + crlf + "%2$s" ;
 
 	/**
-	 * Parameters:<br/>
-	 * 1- form object name.<br/>
-	 * 2- filename.<br/>
-	 * 3- content type.<br/>
+	 * Parameters:<p>
+	 * 1- form object name.<p>
+	 * 2- filename.<p>
+	 * 3- content type.<p>
 	 */
 	private String fileHeader = formDataHeader +  "; filename=\"%2$s\"" + crlf + "Content-type:%3$s" + crlf + crlf;
 
@@ -76,13 +76,15 @@ public class InternetManager extends Thread {
 // ____________________________________________________________________
 	/**
 	 * Starts a connection to given url address with given parameters
-	 * @param ctx
+	 * @param ctx An instance of Context.
 	 * @param url Url address.
 	 * @param reqCode A request code to distinguish responses.
-	 * @param Headers
-	 * @param get_params
-	 * @param post_params
-	 * @param listener
+	 * @param Headers An array of {@link Pair} including needed headers to send to server
+	 * @param get_params An array of {@link Pair} including all path parameters to send to server
+	 * @param post_params An array of {@link PostParam} including all post parameters must be sent
+	 *                    to server
+	 * @param listener An instance of {@link OnConnectionResultListener} which listens to
+	 *                    communication activities.
 	 * @param tag Any object to tag to response.
 	 */
 	public void connect(final Context ctx, String url, final int reqCode, final ArrayList<Pair<String, String>> Headers, final ArrayList<Pair<String, String>> get_params,final ArrayList<PostParam> post_params, final OnConnectionResultListener listener, Object tag)
@@ -161,7 +163,7 @@ public class InternetManager extends Thread {
 
 // ____________________________________________________________________
 	/**
-	 * Disconnects connection and also informs listener about disconnection.<br/>
+	 * Disconnects connection and also informs listener about disconnection.
 	 * <h1>Note:</h1>
 	 * Calling this function perfectly cancels upload actions, but if streaming is in download status, this method just tell the listener
 	 * to cancel work. The listener could response the cancellation depend on it's situation. <b>That means the listener HAVE TO handle
@@ -190,8 +192,8 @@ public class InternetManager extends Thread {
 // ____________________________________________________________________
 	/**
 	 * Checks if device is connected or not.
-	 * @param ctx
-	 * @return
+	 * @param ctx An instance of {@link Context}
+	 * @return An instance of {@link ConnectionDescriber} which describes the connectivity state.
 	 */
 	public static ConnectionDescriber isConnected(Context ctx)
 	{
@@ -286,9 +288,9 @@ public class InternetManager extends Thread {
 
 	/**
 	 * Convert post parameters into a key value format as like as : <b>name=value&name=value...</b>
-	 * @param postParams
-	 * @param forUrl
-     * @return
+	 * @param postParams Post parameters to send.
+	 * @param forUrl The url which this request is going to be sent to.
+     * @return An string including all key an value of post params.
      */
 	private String createKeyValueBodyFrom(ArrayList<PostParam> postParams, String forUrl) {
 

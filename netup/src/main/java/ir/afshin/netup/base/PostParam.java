@@ -56,8 +56,8 @@ public class PostParam implements Serializable{
 
 	/**
 	 * Creates a string type post parameter.
-	 * @param name
-	 * @param value
+	 * @param name The name of the parameter.
+	 * @param value The value of the parameter.
 	 */
 	public PostParam(String name, String value)
 	{
@@ -74,10 +74,10 @@ public class PostParam implements Serializable{
 
 	/**
 	 * Creates a file type post parameters.
-	 * @param name
-	 * @param fileName
-	 * @param mimeType
-	 * @param fileToUpload
+	 * @param name The name of the parameter.
+	 * @param fileName The filename. It must not include the path.
+	 * @param mimeType The mime type of the file which is going to be sent.
+	 * @param fileToUpload The file object which must be uploaded.
 	 */
 	public PostParam(String name, String fileName, String mimeType, File fileToUpload)
 	{

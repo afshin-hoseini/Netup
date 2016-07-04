@@ -5,7 +5,6 @@ import android.net.NetworkInfo;
 /**
  * @author afshin
  * This class will contains some information about internet connection.
- * <br/>
  * @see ConnectionDescriber#isConnected
  * @see ConnectionDescriber#connectUsing
  * @see ConnectionDescriber#connectionStatus

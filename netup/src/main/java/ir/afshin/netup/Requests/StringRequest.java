@@ -67,7 +67,7 @@ public class StringRequest extends Request {
 
     /**
      * Sets the given listener as default listener for this request's status.
-     * @param listener
+     * @param listener An instance of {@link OnStringResponse} which listens to responses.
      */
     public void setOnStringResponseListener(OnStringResponse listener) {
 
@@ -77,7 +77,8 @@ public class StringRequest extends Request {
 
     /**
      * Sets the given listener as default upload progress listener.
-     * @param uploadProgressListener
+     * @param uploadProgressListener An instance of {@link UploadProgressListener} which listens to
+     *                               upload progress.
      */
     public void setUploadProgressListener(UploadProgressListener uploadProgressListener) {
 
@@ -176,13 +177,7 @@ public class StringRequest extends Request {
 
     }
 // ____________________________________________________________________
-    /**
-     * Read data from input stream and convert it to string..
-     * @param inStream
-     * @return
-     * @throws Exception While some errors occurs, usually because of connection leaks.
-     * @author afshin - Apr 28, 2013 at 8:51:02 AM
-     */
+
     private String readStringResponse(InputStream inStream) throws Exception
     {
         String line = "";
@@ -214,7 +209,7 @@ public class StringRequest extends Request {
 
         /**
          * Will be invoked once the given {@link Request} is finished.
-         * @param request
+         * @param request The request which finished.
          * @param response Includes server response.
          * @param success <i>true</i> if the request succeeded, <i>false</i> otherwise.
          * @param connection The connection object which handles the connection to server.
