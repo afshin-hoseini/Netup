@@ -38,7 +38,7 @@ public class FileManager {
 // ____________________________________________________________________	
 	/**
 	 * Gets project base folder.
-	 * @param ctx
+	 * @param ctx An instance of {@link Context}
 	 * @return A path, ends with <b>/</b>
 	 * @author afshin
 	 */
@@ -92,8 +92,8 @@ public class FileManager {
 // ____________________________________________________________________
 	/**
 	 * Checks if external storage like SD card is mounted or not.
-	 * @param ctx
-	 * @return
+	 * @param ctx An instance of {@link Context}
+	 * @return <i>true</i> if external storage is mounted, <i>false</i> otherwise.
 	 */
 	public static synchronized boolean isMountedMedia(Context ctx) {
 		try {
@@ -109,8 +109,8 @@ public class FileManager {
 // ____________________________________________________________________
 	/**
 	 * Makes given directory and also ensures that a directory is exists or not.
-	 * @param dir
-	 * @return
+	 * @param dir The directory path you wanna make.
+	 * @return <i>true</i> if made successfully, <i>false</i> otherwise.
 	 */
 	public static boolean makeDir(String dir)
 	{
@@ -123,8 +123,8 @@ public class FileManager {
 // ____________________________________________________________________
 	/**
 	 * Checks if a file is exists or not
-	 * @param filename
-	 * @return
+	 * @param filename The file path you wanna check is exists or not.
+	 * @return <i>true</i> if exists, <i>false</i> otherwise.
 	 */
 	public static boolean isExist(String filename)
 	{
@@ -136,7 +136,7 @@ public class FileManager {
 	/**
 	 *
 	 * @param strPath Must enclosed with "/"
-	 * @return
+	 * @return <i>true</i> if the given path is deleted successfully, <i>false</i> otherwise.
 	 */
 	public static boolean delete(String strPath)
 	{

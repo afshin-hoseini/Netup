@@ -4,7 +4,6 @@ import java.security.MessageDigest;
 import java.util.Random;
 
 /**
- * <br/><br/>
  * Created by Afshin on 9/6/2015.
  */
 public class Coding {

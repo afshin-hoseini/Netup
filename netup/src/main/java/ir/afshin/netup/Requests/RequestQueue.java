@@ -11,9 +11,9 @@ import ir.afshin.netup.base.ConnectionStatus;
  * Creates a queue for requests which supports two modes:
  * <ol>
  *     <li>
- *         <b>Normal:</b><br/>
+ *         <b>Normal:</b><p>
  *         All requests will be served sequentially.
- *         <b>Dictator:</b><br/>
+ *         <b>Dictator:</b><p>
  *         It is usable when you wanna dispatch many low-priority requests to
  *         server, for example downloading avatar images of posts in a listView or something similar.
  *         This way, the queue will cancel some old requests to feed the newest ones. The number of

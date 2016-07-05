@@ -6,7 +6,9 @@ package ir.afshin.netup.base;
 public interface ContentEncoder {
 
     /**
-     * @param valueToEncode
+     * @param forUrl The url this conversion is belong to.
+     * @param forKey The key of parameter.
+     * @param valueToEncode The value that this method must encode in the the way it wants.
      * @return The encoded content of <i>valueToEncode</i> parameter, or <b>null</b> if you wish to
      * default encoder take the control.
      */
