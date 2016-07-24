@@ -109,7 +109,8 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        }, 5000);
 
-        uploadTest();
+       // uploadTest();
+        testQueueStatusReporting();
     }
 
 
@@ -130,6 +131,43 @@ public class MainActivity extends AppCompatActivity {
 
             Log.e("Adding to queue", fileName);
             requestQueue.add(request);
+        }
+    }
+
+    private void testQueueStatusReporting() {
+
+        RequestQueue requestQueue = RequestQueue.createNormalQueue();
+
+        RequestQueue.OnQueueStatusChangedListener onQueueStatusChangedListener = new RequestQueue.OnQueueStatusChangedListener() {
+            @Override
+            public void onStatusChanged(RequestQueue requestQueue, RequestQueue.QueueStatus queueStatus, int awaitingMembers, int nowServingCount) {
+
+                Log.e("QueueStatus:", queueStatus + "" + awaitingMembers);
+            }
+        };
+
+        requestQueue.setOnQueueStatusChangedListener(onQueueStatusChangedListener);
+
+        for(int i=0; i<10; i++) {
+
+//            if(i == 9)
+//                requestQueue.cancelAll();
+
+            final int j = i;
+            StringRequest stringRequest = new StringRequest(this, "http://www.google.com", null, null, null, new StringRequest.OnStringResponse() {
+                @Override
+                public void onStart(Request request) {
+
+                }
+
+                @Override
+                public void onFinish(Request request, String response, boolean success, HttpURLConnection connection, ConnectionStatus status) {
+
+                    Log.e("Request "+j, "finished: " + success);
+                }
+            });
+
+            requestQueue.add(stringRequest);
         }
     }
 

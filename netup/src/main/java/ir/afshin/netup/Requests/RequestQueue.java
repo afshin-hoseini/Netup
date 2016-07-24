@@ -37,6 +37,12 @@ public class RequestQueue {
     boolean pause = false;
     boolean cancelled = false;
     boolean isAdding = false;
+    private OnQueueStatusChangedListener onQueueStatusChangedListener = null;
+
+    public enum QueueStatus {
+
+        Serving, Paused, Cancelled, Finished
+    }
 
 // ____________________________________________________________________
 
@@ -50,6 +56,13 @@ public class RequestQueue {
         this.maxConcurrentServingRequests = maxConcurrentServingRequests;
         this.isDictator = isDictator;
         this.dictatorCapacity = dictatorCapacity;
+    }
+
+// ____________________________________________________________________
+
+    public void setOnQueueStatusChangedListener(OnQueueStatusChangedListener onQueueStatusChangedListener) {
+
+        this.onQueueStatusChangedListener = onQueueStatusChangedListener;
     }
 
 // ____________________________________________________________________
@@ -160,12 +173,12 @@ public class RequestQueue {
                 Object[] arr_requests = requests.toArray();
                 int itemsToDelete = requests.size() - dictatorCapacity;
 
-                Log.e("Items to Delete", "" + itemsToDelete);
+                //Log.e("Items to Delete", "" + itemsToDelete);
 
                 for(int i =0; i < itemsToDelete; i++) {
 
                     requests.remove(arr_requests[i]);
-                    Log.e("Dictator", "Removed request with tag: " + (String)((Request) arr_requests[i] ).getTag());
+                    ////Log.e("Dictator", "Removed request with tag: " + (String)((Request) arr_requests[i] ).getTag());
                 }
 
             }
@@ -323,6 +336,10 @@ public class RequestQueue {
 
             ((Request)request).cancel();
         }
+
+        if(onQueueStatusChangedListener != null)
+            onQueueStatusChangedListener.onStatusChanged(this, QueueStatus.Cancelled, requests.size(), nowServingRequests.size());
+
     }
 
 // ____________________________________________________________________
@@ -343,12 +360,15 @@ public class RequestQueue {
                 nowServingRequests.add(request);
                 request.onRequestFinishListener = this.requestFinishListener;
                 request.startJob();
+
+                if(onQueueStatusChangedListener != null)
+                    onQueueStatusChangedListener.onStatusChanged(this, QueueStatus.Serving, requests.size(), nowServingRequests.size());
             }
             else
                 break;
         }
 
-        Log.e("SERVING COUNT", nowServingRequests.size() + "");
+        ////Log.e("SERVING COUNT", nowServingRequests.size() + "");
     }
 
 // ____________________________________________________________________
@@ -359,6 +379,9 @@ public class RequestQueue {
     public void pause() {
 
         pause = true;
+
+        if(onQueueStatusChangedListener != null)
+            onQueueStatusChangedListener.onStatusChanged(this, QueueStatus.Paused, requests.size(), nowServingRequests.size());
     }
 
 // ____________________________________________________________________
@@ -385,6 +408,9 @@ public class RequestQueue {
 
             nowServingRequests.remove(request);
             serve();
+
+            if(!cancelled && nowServingRequests.size() == 0 && requests.size() == 0 && onQueueStatusChangedListener != null)
+                onQueueStatusChangedListener.onStatusChanged(RequestQueue.this, QueueStatus.Finished, requests.size(), nowServingRequests.size());
         }
     };
 
@@ -403,6 +429,13 @@ public class RequestQueue {
          * , <i>false</i> otherwise.
          */
         boolean shouldPerformActionOn(Request request);
+    }
+
+// ____________________________________________________________________
+
+    public interface OnQueueStatusChangedListener {
+
+        void onStatusChanged(RequestQueue requestQueue, QueueStatus queueStatus, int awaitingMembers, int nowServingCount);
     }
 
 // ____________________________________________________________________
