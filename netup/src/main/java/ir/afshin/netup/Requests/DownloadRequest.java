@@ -24,8 +24,6 @@ public class DownloadRequest extends Request {
     private OnDownloadRequestProgress downloadListener = null;
     private boolean cancelWork = false;
 
-    Handler handler = new Handler();
-
 // ____________________________________________________________________
 
     public DownloadRequest(Context ctx, OnDownloadRequestProgress downloadListener){
