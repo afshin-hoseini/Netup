@@ -34,11 +34,11 @@ public enum ConnectionStatus {
                 {
                         status = ConnectionStatus.UNSUCCESSFUL;
                 }
-                else if((serverResponseCode >= 400 && serverResponseCode < 403) ||  (serverResponseCode >= 405 && serverResponseCode < 407))
-                {
+                else if(serverResponseCode == 401) {
+
                         status = ConnectionStatus.UserNotAuthenticated;
                 }
-                else if(serverResponseCode >= 407 && serverResponseCode < 600)
+                else if(serverResponseCode >= 400 && serverResponseCode < 600)
                 {
                         status = ConnectionStatus.UNSUCCESSFUL;
                 }
