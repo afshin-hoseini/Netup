@@ -112,6 +112,13 @@ public class RequestQueue {
 
         return createDictatorQueue(4, 20);
     }
+
+// ____________________________________________________________________
+
+    public boolean isCancelled() {
+
+        return cancelled;
+    }
 // ____________________________________________________________________
 
     /**

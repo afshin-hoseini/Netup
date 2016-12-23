@@ -179,29 +179,39 @@ public class DownloadRequest extends Request {
             }
         };
 
-        String validCachedFilename = CacheManager.getCachedFileName(ctx, url);
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        if(validCachedFilename == null) {
-            cancelWork = false;
+                String validCachedFilename = CacheManager.getCachedFileName(ctx, url);
 
-            try {
+                if(validCachedFilename == null) {
+                    cancelWork = false;
 
-                start();
-            } catch (Exception e) {
+                    try {
 
-                e.printStackTrace();
+                        start();
+                    } catch (Exception e) {
+
+                        e.printStackTrace();
+                    }
+                }
+                else{
+
+                    if(downloadListener != null) {
+
+                        downloadListener.onStart(DownloadRequest.this);
+                        downloadListener.onFinish(DownloadRequest.this, true, ConnectionStatus.SUCCESSFUL, validCachedFilename);
+                        notifyRequestFinishToQueue(ConnectionStatus.SUCCESSFUL);
+                        Log.e("DL-Req","File: " + validCachedFilename);
+                    }
+                }
             }
-        }
-        else{
+        });
 
-            if(downloadListener != null) {
+        thread.setDaemon(true);
+        thread.start();
 
-                downloadListener.onStart(DownloadRequest.this);
-                downloadListener.onFinish(DownloadRequest.this, true, ConnectionStatus.SUCCESSFUL, validCachedFilename);
-                notifyRequestFinishToQueue(ConnectionStatus.SUCCESSFUL);
-                Log.e("DL-Req","File: " + validCachedFilename);
-            }
-        }
     }
 
 // ____________________________________________________________________

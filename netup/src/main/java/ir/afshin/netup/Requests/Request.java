@@ -212,13 +212,21 @@ public abstract class Request extends InternetManager{
     @Override
     public boolean equals(Object request) {
 
-        boolean isEqual = false;
+        if(request != null && request instanceof Request) {
 
-        Request req = (Request) request;
+            boolean isEqual = false;
 
-        isEqual = url.equals(req.url);
+            Request req = (Request) request;
 
-        return isEqual;
+            if (url != null && req != null)
+                isEqual = url.equals(req.url);
+
+            return isEqual;
+        }
+        else {
+
+            return super.equals(request);
+        }
     }
 
 

@@ -14,6 +14,7 @@ import javax.net.ssl.HttpsURLConnection;
 import ir.afshin.netup.base.PostParam.ParamType;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
