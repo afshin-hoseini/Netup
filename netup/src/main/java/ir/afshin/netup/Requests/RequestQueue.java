@@ -112,6 +112,13 @@ public class RequestQueue {
 
         return createDictatorQueue(4, 20);
     }
+
+// ____________________________________________________________________
+
+    public boolean isCancelled() {
+
+        return cancelled;
+    }
 // ____________________________________________________________________
 
     /**
@@ -206,7 +213,8 @@ public class RequestQueue {
 
                 if (((Request) request).isMemberOfGroup(groupName)) {
 
-                    requests.remove(request);
+                    if(request != null)
+                        requests.remove(request);
                 }
             }
         }
@@ -220,7 +228,8 @@ public class RequestQueue {
 
                 if (((Request) request).isMemberOfGroup(groupName)) {
 
-                    ((Request) request).cancel();
+                    if(request != null)
+                        ((Request) request).cancel();
                 }
             }
         }
@@ -263,7 +272,8 @@ public class RequestQueue {
 
                 if (((Request) request).isEqualToIdentifier(identifier)) {
 
-                    ((Request) request).cancel();
+                    if(request != null)
+                        ((Request) request).cancel();
                 }
             }
         }
@@ -294,7 +304,8 @@ public class RequestQueue {
 
                 if (deletionFilter.shouldPerformActionOn((Request) request)) {
 
-                    requests.remove(request);
+                    if(request != null)
+                        requests.remove(request);
                 }
             }
         }
@@ -334,7 +345,8 @@ public class RequestQueue {
 
         for(Object request : arrObj_request) {
 
-            ((Request)request).cancel();
+            if(request != null)
+                ((Request)request).cancel();
         }
 
         if(onQueueStatusChangedListener != null)
