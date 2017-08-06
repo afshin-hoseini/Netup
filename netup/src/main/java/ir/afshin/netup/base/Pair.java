@@ -33,14 +33,14 @@ public class Pair<F extends String,S extends String> implements Serializable{
 
 // ____________________________________________________________________
 
-	String getFirst() {
+	public String getFirst() {
 
 		return first;
 	}
 
 // ____________________________________________________________________
 
-	String getSecond(String forUrl) {
+	public String getSecond(String forUrl) {
 
 		String encodedSecond = null;
 
@@ -62,6 +62,13 @@ public class Pair<F extends String,S extends String> implements Serializable{
 		}
 
 		return encodedSecond;
+	}
+
+// ____________________________________________________________________
+
+	public String getSecond() {
+
+		return second;
 	}
 
 // ____________________________________________________________________
