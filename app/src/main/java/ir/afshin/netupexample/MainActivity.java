@@ -110,10 +110,45 @@ public class MainActivity extends AppCompatActivity {
 //        }, 5000);
 
        // uploadTest();
-        testQueueStatusReporting();
+        //testQueueStatusReporting();
+        testTimeOut();
     }
 
 
+    private void testTimeOut() {
+
+
+        StringRequest.OnStringResponse listener = new StringRequest.OnStringResponse() {
+            @Override
+            public void onStart(Request request) {
+
+                Log.e("TES_timeOut", "Started -> " + (String) request.getTag());
+
+            }
+
+            @Override
+            public void onFinish(Request request, String response, boolean success, HttpURLConnection connection, ConnectionStatus status) {
+
+                Log.e("TES_timeOut", "Finished: " + status + "  -->  " + (String) request.getTag() + "\n\n-----------------\n\n");
+            }
+        };
+
+        RequestQueue requestQueue = RequestQueue.createDictatorQueue(2,2);
+
+        //"http://restmock.barbaan.ir/app/testTimeOut"
+
+        StringRequest request1 = new StringRequest(this, "https://www.google.com:81/", null, null, null, listener);
+        request1.setTag("Req 1");
+        requestQueue.add(request1);
+
+        StringRequest request2 = new StringRequest(this, "https://www.google.com:81/", null, null, null, listener);
+        request2.setTag("Req 2");
+        requestQueue.add(request2);
+
+        StringRequest request3 = new StringRequest(this, "https://www.google.com:81/", null, null, null, listener);
+        request3.setTag("Req 3");
+        requestQueue.add(request3);
+    }
 
 
     private void loadImage(String fileName) {

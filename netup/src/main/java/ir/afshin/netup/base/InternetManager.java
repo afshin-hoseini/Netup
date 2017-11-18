@@ -200,16 +200,25 @@ public class InternetManager extends Thread {
 	{
 		ConnectionDescriber desc = new ConnectionDescriber();
 
-		ConnectivityManager cm = (ConnectivityManager)ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+		try {
 
-		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-		if(activeNetwork == null)
+			ConnectivityManager cm = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+			NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+			if (activeNetwork == null)
+				desc.isConnected = false;
+			else {
+				desc.isConnected = activeNetwork.isConnectedOrConnecting();
+				desc.connectUsing = activeNetwork.getType();
+				desc.connectionStatus = activeNetwork.getDetailedState();
+			}
+		}catch (Exception ex) {
+
+			ex.printStackTrace();
+
 			desc.isConnected = false;
-		else
-		{
-			desc.isConnected = activeNetwork.isConnectedOrConnecting();
-			desc.connectUsing = activeNetwork.getType();
-			desc.connectionStatus = activeNetwork.getDetailedState();
+			desc.connectUsing = 0;
+			desc.connectionStatus = NetworkInfo.DetailedState.FAILED;
 		}
 
 		return desc;
@@ -602,7 +611,7 @@ public class InternetManager extends Thread {
 				{
 
 					connection.setConnectTimeout(timeOut);
-//					connection.setReadTimeout(timeOut);
+					//connection.setReadTimeout(timeOut);
 
 					int responseCode = connection.getResponseCode();
 
