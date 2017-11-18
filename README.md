@@ -7,4 +7,4 @@ An easy to use and powerful package for android http/https requests.
 
 # Install using gradle
 Add this line to module `build.gradle` dependency.
-`compile 'ir.afshin.netup:netup:0.2.3'`
+`compile 'ir.afshin.netup:netup:0.2.4'`
